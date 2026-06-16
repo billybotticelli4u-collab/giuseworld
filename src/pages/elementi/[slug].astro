@@ -1,0 +1,43 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import PrevNext from '../../components/PrevNext.astro';
+import { getElementi, prevNext, tracceCollegate, urlFor } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const elementi = await getElementi();
+  return elementi.map((e) => ({ params: { slug: e.id }, props: { id: e.id } }));
+}
+const { id } = Astro.props as { id: string };
+const elementi = await getElementi();
+const entry = elementi.find((e) => e.id === id)!;
+const { Content } = await render(entry);
+const { prev, next } = prevNext(elementi, id);
+const tracce = await tracceCollegate('elementiCollegati', id);
+---
+<Base title={entry.data.titolo}>
+  <article class="wrap page">
+    <Breadcrumb crumbs={[{ href: '/', label: 'Gate' }, { href: '/elementi', label: 'Elementi' }, { label: entry.data.titolo }]} />
+    <p class="eyebrow">Elemento</p>
+    <h1>{entry.data.titolo}</h1>
+    {entry.data.immagine && <img class="framed hero" src={entry.data.immagine} alt={entry.data.titolo} loading="lazy" />}
+    <div class="prose"><Content /></div>
+
+    {/* Slot pronto per e-commerce (Fase 2): qui andrà il pulsante "Acquista". */}
+
+    {tracce.length > 0 && (
+      <><h2>Collegamenti</h2>
+        <ul class="rel">{tracce.map((t) => <li><a href={urlFor('tracce', t.id)}>{t.data.titolo}</a></li>)}</ul>
+      </>
+    )}
+
+    <PrevNext prev={prev} next={next} base="/elementi" />
+  </article>
+</Base>
+<style>
+  .hero { margin: 1.2rem 0 1.5rem; }
+  .rel { list-style: none; padding: 0; margin: 0.5rem 0; }
+  .rel li { padding: 0.5rem 0; border-bottom: 1px solid var(--camel); }
+  .rel a { text-decoration: none; font-weight: 500; color: var(--rust-red); }
+</style>

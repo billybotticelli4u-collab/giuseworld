@@ -1,0 +1,26 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import { getRiflessioni, byDateDesc, formatDate } from '../../lib/content';
+const riflessioni = byDateDesc(await getRiflessioni());
+---
+<Base title="Archivio Riflessioni" description="Tutte le riflessioni del progetto.">
+  <div class="wrap page">
+    <Breadcrumb crumbs={[{ href: '/', label: 'Gate' }, { href: '/visione', label: 'Visione' }, { label: 'Archivio Riflessioni' }]} />
+    <p class="eyebrow">Visione</p>
+    <h1>Archivio Riflessioni</h1>
+    {riflessioni.length === 0 ? (
+      <p class="meta">Nessuna riflessione pubblicata.</p>
+    ) : (
+      <ul class="index-list">
+        {riflessioni.map((r) => (
+          <li><a href={`/visione/riflessioni/${r.id}`}>
+            <span class="t">{r.data.titolo}</span>
+            <span class="d">{formatDate(new Date(r.data.data))}</span>
+            {r.data.estratto && <span class="d">{r.data.estratto}</span>}
+          </a></li>
+        ))}
+      </ul>
+    )}
+  </div>
+</Base>

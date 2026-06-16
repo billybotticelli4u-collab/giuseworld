@@ -1,0 +1,96 @@
+---
+import Base from '../../layouts/Base.astro';
+import site from '../../data/site.json';
+const posti = site.mecenatePostiDisponibili;
+const totali = site.mecenatePostiTotali;
+const email = site.emailProgetto;
+---
+<Base title="Unisciti al Viaggio" description="Newsletter, contatti e supporto.">
+  <div class="wrap page">
+    <p class="eyebrow">Unisciti al Viaggio</p>
+    <h1>Come entro e partecipo?</h1>
+    <p class="intro">{site.nomeProgetto} è in continua evoluzione. Se sei arrivato fin qui, sei già
+      parte del viaggio. Qui puoi rimanere aggiornato, entrare in contatto diretto con me e, se lo
+      desideri, contribuire alla crescita del progetto.</p>
+
+    {/* Newsletter */}
+    <section class="block">
+      <h2>Rimani aggiornato</h2>
+      <p>Una mail a settimana, la domenica. Un pensiero personale, il link all'ultima riflessione e
+        qualche anteprima. Niente spam, niente rumore.</p>
+      <form class="news" action={site.newsletterAction} method="post">
+        <input type="email" name="email" required placeholder="La tua email" aria-label="Email" />
+        {/* Honeypot anti-bot (nascosto, niente cookie/captcha di terze parti) */}
+        <input type="text" name="website" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true" />
+        <button class="cta" type="submit">Iscriviti</button>
+      </form>
+    </section>
+
+    {/* Contatto */}
+    <section class="block">
+      <h2>Entra in contatto</h2>
+      <p>Scrivimi direttamente: <a href={`mailto:${email}`}>{email}</a></p>
+    </section>
+
+    {/* Sostieni */}
+    <section class="block">
+      <h2>Sostieni il progetto</h2>
+      <div class="tiers">
+        <article class="tier">
+          <h3>Sostenitore</h3>
+          <p class="price">5€<span>/mese</span></p>
+          <p>Ricevi ogni nuovo capitolo in anteprima, 24 ore prima della pubblicazione.
+            Iscrivendoti entro i primi 6 mesi, il tuo nome resterà per sempre nella Pagina dei Fondatori.</p>
+          <a class="cta" href={site.paypal.sostenitore}>Sostieni con 5€/mese</a>
+        </article>
+
+        <article class="tier">
+          <h3>Partecipante</h3>
+          <p class="price">10€<span>/mese</span></p>
+          <p>Tutti i benefici del Sostenitore, più una riflessione extra al mese non pubblicata sul sito.
+            In più, i download in alta qualità (MP3 320kbps) di ogni capitolo, con i file lossless (WAV) su richiesta.</p>
+          <a class="cta" href={site.paypal.partecipante}>Sostieni con 10€/mese</a>
+        </article>
+
+        <article class="tier tier--mecenate">
+          <h3>Mecenate</h3>
+          <p class="price">100€<span>/mese</span></p>
+          <p>Tutti i benefici del Partecipante, il tuo nome nei crediti di ogni nuovo capitolo, e un
+            oggetto fisico creato da me una volta all'anno.</p>
+          <p class="posti">Posti disponibili: {posti}/{totali}</p>
+          {posti > 0
+            ? <a class="cta" href={site.paypal.mecenate}>Sostieni con 100€/mese</a>
+            : <a class="waitlist" href={`mailto:${email}?subject=${encodeURIComponent("Lista d'attesa Mecenate")}`}>Entra in lista d'attesa</a>}
+        </article>
+      </div>
+      <p class="note">Puoi annullare in qualsiasi momento senza nessun vincolo. Questo non è un
+        abbonamento commerciale. È un modo per far parte del viaggio finché vuoi.</p>
+    </section>
+
+    {/* Fondatori */}
+    <section class="block">
+      <p>Per me il supporto non si misura in cifre. Chi sosterrà il progetto nei suoi primi sei mesi,
+        qualsiasi livello scelga, resterà per sempre sulla pagina dei Fondatori.</p>
+      <a class="link-accent" href="/fondatori">I Fondatori →</a>
+    </section>
+  </div>
+</Base>
+<style>
+  .intro { font-family: var(--font-display); font-size: 1.25rem; line-height: 1.5; }
+  .block { margin-top: 2.5rem; }
+  .news { display: flex; flex-wrap: wrap; gap: 0.6rem; max-width: 30rem; }
+  .news input[type=email] { flex: 1; min-width: 12rem; padding: 0.7rem 0.9rem; border: 1px solid var(--camel); background: #fff8ef; border-radius: 2px; font: inherit; }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; }
+  .tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+  @media (max-width: 760px) { .tiers { grid-template-columns: 1fr; } }
+  .tier { background: var(--sunlit-khaki); border: 1px solid var(--camel); padding: 1.4rem; display: flex; flex-direction: column; }
+  .tier h3 { margin-top: 0; }
+  .tier .cta { margin-top: auto; text-align: center; }
+  .price { font-family: var(--font-display); font-size: 1.8rem; margin: 0.2rem 0 0.6rem; }
+  .price span { font-size: 0.9rem; color: var(--chocolate); }
+  .tier--mecenate { background: var(--chocolate); color: var(--ivory-cream); }
+  .tier--mecenate h3, .tier--mecenate .price { color: var(--ivory-cream); }
+  .posti { font-size: 0.85rem; color: var(--solar-yellow); }
+  .waitlist { margin-top: auto; text-align: center; color: var(--ivory-cream); border: 1px solid var(--camel); padding: 0.7rem 1rem; border-radius: 2px; text-decoration: none; }
+  .note { margin-top: 1.2rem; font-size: 0.9rem; color: var(--chocolate); }
+</style>

@@ -1,0 +1,24 @@
+---
+// crumbs: array of { href?, label }. Last item is current page (no link).
+interface Crumb { href?: string; label: string; }
+const { crumbs } = Astro.props as { crumbs: Crumb[] };
+---
+<nav class="breadcrumb" aria-label="Percorso">
+  <ol>
+    {crumbs.map((c, i) => (
+      <li>
+        {c.href && i < crumbs.length - 1
+          ? <a href={c.href}>{c.label}</a>
+          : <span aria-current="page">{c.label}</span>}
+        {i < crumbs.length - 1 && <span class="sep" aria-hidden="true">/</span>}
+      </li>
+    ))}
+  </ol>
+</nav>
+<style>
+  .breadcrumb ol { list-style: none; display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0 0 1.5rem; padding: 0; font-size: 0.8rem; color: var(--camel); }
+  .breadcrumb a { color: var(--camel); text-decoration: none; }
+  .breadcrumb a:hover { color: var(--rust-red); }
+  .breadcrumb span[aria-current] { color: var(--chocolate); }
+  .breadcrumb .sep { margin-left: 0.4rem; }
+</style>

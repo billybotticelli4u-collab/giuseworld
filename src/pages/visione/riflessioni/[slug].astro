@@ -1,0 +1,41 @@
+---
+import { render } from 'astro:content';
+import Base from '../../../layouts/Base.astro';
+import Breadcrumb from '../../../components/Breadcrumb.astro';
+import PrevNext from '../../../components/PrevNext.astro';
+import { getRiflessioni, prevNext, formatDate, tracceCollegate, urlFor } from '../../../lib/content';
+
+export async function getStaticPaths() {
+  const riflessioni = await getRiflessioni();
+  return riflessioni.map((r) => ({ params: { slug: r.id }, props: { id: r.id } }));
+}
+const { id } = Astro.props as { id: string };
+const riflessioni = await getRiflessioni();
+const entry = riflessioni.find((r) => r.id === id)!;
+const { Content } = await render(entry);
+const { prev, next } = prevNext(riflessioni, id);
+const tracce = await tracceCollegate('riflessioniCollegate', id);
+---
+<Base title={entry.data.titolo} description={entry.data.estratto ?? ''}>
+  <article class="wrap page reflection">
+    <Breadcrumb crumbs={[{ href: '/', label: 'Gate' }, { href: '/visione', label: 'Visione' }, { label: entry.data.titolo }]} />
+    <h1>{entry.data.titolo}</h1>
+    <p class="meta">{formatDate(new Date(entry.data.data))}</p>
+    <div class="prose"><Content /></div>
+
+    {tracce.length > 0 && (
+      <><h2>Collegamenti</h2>
+        <ul class="rel">{tracce.map((t) => <li><a href={urlFor('tracce', t.id)}>{t.data.titolo}</a></li>)}</ul>
+      </>
+    )}
+
+    <PrevNext prev={prev} next={next} base="/visione/riflessioni" />
+  </article>
+</Base>
+<style>
+  .reflection { max-width: 40rem; }
+  .prose :global(blockquote) { border-left: 3px solid var(--camel); margin: 1.5rem 0; padding-left: 1.1rem; font-family: var(--font-display); font-style: italic; color: var(--chocolate); }
+  .rel { list-style: none; padding: 0; margin: 0.5rem 0; }
+  .rel li { padding: 0.5rem 0; border-bottom: 1px solid var(--camel); }
+  .rel a { text-decoration: none; font-weight: 500; color: var(--rust-red); }
+</style>

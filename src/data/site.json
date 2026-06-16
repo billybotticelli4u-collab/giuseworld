@@ -1,0 +1,16 @@
+{
+  "nomeProgetto": "GIUSE WORLD",
+  "emailProgetto": "ciao@giuseworld.com",
+  "gateTraccia": "xyz",
+  "gateBenvenuto": "Non sei su un sito. Sei all'ingresso di un percorso che si scrive mentre accade. Ascolta, e poi entra.",
+  "fondamentaManifesto": "Questo progetto nasce da un'idea semplice: documentare la costruzione di un percorso musicale nel tempo, senza rumore. Niente algoritmi, niente vetrina. Solo la musica, il modo in cui nasce, e le persone e i pensieri che la formano. Qui raccolgo i principi che mi guidano e le riflessioni che li mettono in movimento.",
+  "mecenatePostiTotali": 10,
+  "mecenatePostiDisponibili": 10,
+  "paypal": {
+    "sostenitore": "#",
+    "partecipante": "#",
+    "mecenate": "#"
+  },
+  "newsletterAction": "#",
+  "fondatori": []
+}

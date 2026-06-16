@@ -1,0 +1,44 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import PrevNext from '../../components/PrevNext.astro';
+import { getStorie, prevNext, formatDate, tracceCollegate, urlFor } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const storie = await getStorie();
+  return storie.map((s) => ({ params: { slug: s.id }, props: { id: s.id } }));
+}
+const { id } = Astro.props as { id: string };
+const storie = await getStorie();
+const entry = storie.find((s) => s.id === id)!;
+const { Content } = await render(entry);
+const { prev, next } = prevNext(storie, id);
+const tracce = await tracceCollegate('storieCollegate', id);
+---
+<Base title={entry.data.titolo} description={entry.data.contesto ?? ''}>
+  <article class="wrap page">
+    <Breadcrumb crumbs={[{ href: '/', label: 'Gate' }, { href: '/storie', label: 'Storie' }, { label: entry.data.titolo }]} />
+    <p class="eyebrow accent-storie">Storia</p>
+    <h1 class="accent-storie">{entry.data.titolo}</h1>
+    {entry.data.immagine && <img class="framed hero" src={entry.data.immagine} alt={entry.data.titolo} loading="lazy" />}
+
+    {entry.data.contesto && (<><h2>Il contesto</h2><p>{entry.data.contesto}</p></>)}
+    {entry.data.impatto && (<><h2>L'impatto</h2><p>{entry.data.impatto}</p></>)}
+    <div class="prose"><Content /></div>
+
+    {tracce.length > 0 && (
+      <><h2>Tracce influenzate</h2>
+        <ul class="rel">{tracce.map((t) => <li><a href={urlFor('tracce', t.id)}>{t.data.titolo}</a></li>)}</ul>
+      </>
+    )}
+
+    <PrevNext prev={prev} next={next} base="/storie" />
+  </article>
+</Base>
+<style>
+  .hero { margin: 1.2rem 0 1.5rem; filter: saturate(0.9); }
+  .rel { list-style: none; padding: 0; margin: 0.5rem 0; }
+  .rel li { padding: 0.5rem 0; border-bottom: 1px solid var(--camel); }
+  .rel a { text-decoration: none; font-weight: 500; color: var(--rust-red); }
+</style>

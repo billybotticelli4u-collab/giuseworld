@@ -1,0 +1,24 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getSessioni, byDateDesc, formatDate } from '../../lib/content';
+const sessioni = byDateDesc(await getSessioni());
+---
+<Base title="Processo Creativo" description="Come nasce la musica.">
+  <div class="wrap page">
+    <p class="eyebrow accent-processo">Processo Creativo</p>
+    <h1>Come nasce?</h1>
+    <p>Le sessioni di lavoro documentate, dalla più recente.</p>
+    {sessioni.length === 0 ? (
+      <p class="meta">Nessuna sessione pubblicata.</p>
+    ) : (
+      <ul class="index-list">
+        {sessioni.map((s) => (
+          <li><a href={`/processo/${s.id}`}>
+            <span class="t">{s.data.titolo}</span>
+            <span class="d">{formatDate(new Date(s.data.data))}</span>
+          </a></li>
+        ))}
+      </ul>
+    )}
+  </div>
+</Base>

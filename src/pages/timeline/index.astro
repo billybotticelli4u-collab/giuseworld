@@ -1,0 +1,50 @@
+---
+import Base from '../../layouts/Base.astro';
+import { buildTimeline, formatDate } from '../../lib/content';
+const items = await buildTimeline();
+// Group by year for readability.
+const byYear = new Map<number, typeof items>();
+for (const it of items) {
+  const y = it.date.getFullYear();
+  if (!byYear.has(y)) byYear.set(y, []);
+  byYear.get(y)!.push(it);
+}
+const years = [...byYear.keys()].sort((a, b) => b - a);
+---
+<Base title="Timeline" description="La cronologia di tutto il percorso.">
+  <div class="wrap page">
+    <p class="eyebrow">Timeline</p>
+    <h1>Quando è successo?</h1>
+    <p>Tutto il percorso in ordine cronologico inverso. Generata automaticamente dai contenuti.</p>
+
+    {items.length === 0 ? (
+      <p class="meta">La timeline si popolerà con i primi contenuti.</p>
+    ) : years.map((y) => (
+      <section class="year">
+        <h2>{y}</h2>
+        <ul class="tl">
+          {byYear.get(y)!.map((it) => (
+            <li>
+              <span class="date">{formatDate(it.date)}</span>
+              <span class={`tag tag--${it.collection}`}>{it.tipo}</span>
+              <a href={it.url}>{it.titolo}</a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+  </div>
+</Base>
+<style>
+  .year h2 { border-bottom: 1px solid var(--camel); padding-bottom: 0.3rem; }
+  .tl { list-style: none; padding: 0; margin: 0 0 2rem; }
+  .tl li { display: grid; grid-template-columns: 9.5rem 7rem 1fr; gap: 0.6rem; align-items: baseline; padding: 0.6rem 0; border-bottom: 1px solid rgba(176,139,91,0.4); }
+  .date { font-size: 0.8rem; color: var(--chocolate); }
+  .tag { font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; align-self: center; }
+  .tag--tracce { color: var(--rust-red); }
+  .tag--sessioni { color: var(--moss-green); }
+  .tag--storie { color: var(--terracotta); }
+  .tag--riflessioni { color: var(--bordeaux); }
+  .tl a { text-decoration: none; font-weight: 500; }
+  @media (max-width: 600px) { .tl li { grid-template-columns: 1fr; gap: 0.15rem; } }
+</style>

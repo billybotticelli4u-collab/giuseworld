@@ -1,0 +1,34 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getElementi, byDateDesc } from '../../lib/content';
+const elementi = byDateDesc(await getElementi());
+---
+<Base title="Elementi" description="Come la visione prende forma.">
+  <div class="wrap wrap--wide page">
+    <p class="eyebrow">Elementi</p>
+    <h1>Come prende forma la visione?</h1>
+    <p>Simboli, immagini e pattern che danno corpo al progetto.</p>
+    {elementi.length === 0 ? (
+      <p class="meta">Nessun elemento pubblicato.</p>
+    ) : (
+      <div class="grid">
+        {elementi.map((e) => (
+          <a class="tile" href={`/elementi/${e.id}`}>
+            {e.data.immagine
+              ? <img class="framed" src={e.data.immagine} alt={e.data.titolo} loading="lazy" />
+              : <div class="ph" aria-hidden="true"></div>}
+            <span>{e.data.titolo}</span>
+          </a>
+        ))}
+      </div>
+    )}
+  </div>
+</Base>
+<style>
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+  @media (max-width: 720px) { .grid { grid-template-columns: 1fr 1fr; } }
+  .tile { text-decoration: none; }
+  .tile img, .ph { aspect-ratio: 1; object-fit: cover; width: 100%; }
+  .ph { background: var(--sunlit-khaki); border: 1px solid var(--camel); }
+  .tile span { display: block; margin-top: 0.5rem; font-family: var(--font-display); }
+</style>

@@ -1,0 +1,24 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getStorie, byDateDesc, formatDate } from '../../lib/content';
+const storie = byDateDesc(await getStorie());
+---
+<Base title="Storie" description="Le persone che mi hanno formato.">
+  <div class="wrap page">
+    <p class="eyebrow accent-storie">Storie</p>
+    <h1>Cosa ti ha formato?</h1>
+    <p>Le persone e gli incontri che hanno cambiato il percorso.</p>
+    {storie.length === 0 ? (
+      <p class="meta">Nessuna storia pubblicata.</p>
+    ) : (
+      <ul class="index-list">
+        {storie.map((s) => (
+          <li><a href={`/storie/${s.id}`}>
+            <span class="t accent-storie">{s.data.titolo}</span>
+            <span class="d">{formatDate(new Date(s.data.data))}</span>
+          </a></li>
+        ))}
+      </ul>
+    )}
+  </div>
+</Base>

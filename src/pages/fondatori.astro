@@ -1,0 +1,24 @@
+---
+import Base from '../layouts/Base.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import site from '../data/site.json';
+const fondatori: string[] = site.fondatori ?? [];
+---
+<Base title="I Fondatori" description="Le prime pietre di questa casa.">
+  <div class="wrap page">
+    <Breadcrumb crumbs={[{ href: '/', label: 'Gate' }, { href: '/unisciti', label: 'Unisciti' }, { label: 'I Fondatori' }]} />
+    <h1>I Fondatori</h1>
+    <p class="sub">Le prime pietre di questa casa. Per sempre.</p>
+    {fondatori.length === 0 ? (
+      <p class="meta">L'elenco dei Fondatori comparirà qui con le prime adesioni.</p>
+    ) : (
+      <ul class="names">{fondatori.map((n) => <li>{n}</li>)}</ul>
+    )}
+  </div>
+</Base>
+<style>
+  .sub { font-family: var(--font-display); font-style: italic; color: var(--chocolate); }
+  .names { list-style: none; padding: 0; columns: 2; gap: 2rem; }
+  .names li { padding: 0.4rem 0; break-inside: avoid; }
+  @media (max-width: 520px) { .names { columns: 1; } }
+</style>

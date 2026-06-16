@@ -1,0 +1,67 @@
+---
+import Base from '../layouts/Base.astro';
+import AudioPlayer from '../components/AudioPlayer.astro';
+import site from '../data/site.json';
+import { getTracce } from '../lib/content';
+
+const tracce = await getTracce();
+const gate = tracce.find((t) => t.id === site.gateTraccia) ?? tracce[0];
+---
+<Base title={site.nomeProgetto} description={site.gateBenvenuto} gate={true}>
+  <section class="gate">
+    <div class="seed" aria-hidden="true">
+      <svg viewBox="0 0 100 160" width="120" height="190">
+        <line class="stem" x1="50" y1="155" x2="50" y2="70" />
+        <path class="leaf l1" d="M50 95 C30 88 24 70 30 58 C44 64 52 80 50 95 Z" />
+        <path class="leaf l2" d="M50 88 C70 80 76 62 70 50 C56 56 48 74 50 88 Z" />
+        <circle class="crown" cx="50" cy="46" r="18" />
+      </svg>
+    </div>
+
+    <div class="gate-inner">
+      <p class="welcome">{site.gateBenvenuto}</p>
+      {gate && (
+        <div class="gate-track">
+          <p class="gate-title">{gate.data.titolo}</p>
+          {gate.data.audio
+            ? <AudioPlayer src={gate.data.audio} title={gate.data.titolo} />
+            : <p class="nofile">Traccia manifesto in arrivo.</p>}
+        </div>
+      )}
+      <a class="enter" href="/archivio">Entra nell'Archivio →</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .gate {
+    min-height: 100vh; min-height: 100dvh;
+    display: grid; place-items: center;
+    background:
+      radial-gradient(ellipse at center, rgba(74,44,31,0) 35%, rgba(20,11,7,0.9) 100%),
+      var(--chocolate);
+    color: var(--ivory-cream);
+    padding: 2rem var(--pad); position: relative; overflow: hidden;
+  }
+  .gate-inner { max-width: 36rem; text-align: center; position: relative; z-index: 2; }
+  .welcome { font-family: var(--font-display); font-size: clamp(1.25rem, 3.5vw, 1.7rem); line-height: 1.5; color: var(--ivory-cream); }
+  .gate-title { font-family: var(--font-display); letter-spacing: 0.1em; text-transform: uppercase; font-size: 0.95rem; color: var(--sunlit-khaki); margin-bottom: 0.2rem; }
+  .gate-track { margin: 2rem 0; }
+  .nofile { color: var(--sunlit-khaki); font-size: 0.9rem; }
+  .enter { display: inline-block; margin-top: 1rem; color: var(--ivory-cream); text-decoration: none; border-bottom: 2px solid var(--solar-yellow); padding-bottom: 2px; font-weight: 500; }
+  .enter:hover { color: var(--solar-yellow); }
+
+  .seed { position: absolute; inset: 0; display: grid; place-items: center; z-index: 1; opacity: 0.5; pointer-events: none; }
+  .seed svg { color: var(--ivory-cream); }
+  .stem { stroke: var(--ivory-cream); stroke-width: 2.5; stroke-linecap: round; transform-origin: 50px 155px; animation: grow 6s ease-in-out infinite; }
+  .leaf, .crown { fill: none; stroke: var(--ivory-cream); stroke-width: 1.6; }
+  .crown { opacity: 0; animation: bloom 6s ease-in-out infinite; }
+  .leaf { opacity: 0; animation: bloom 6s ease-in-out infinite; }
+  .l2 { animation-delay: 0.3s; }
+  @keyframes grow { 0%,100% { transform: scaleY(0.15); } 45%,80% { transform: scaleY(1); } }
+  @keyframes bloom { 0%,30% { opacity: 0; } 60%,80% { opacity: 0.7; } 100% { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) {
+    .stem { transform: scaleY(1); animation: none; }
+    .leaf, .crown { opacity: 0.6; animation: none; }
+  }
+</style>

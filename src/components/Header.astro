@@ -1,0 +1,56 @@
+---
+import site from '../data/site.json';
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const nav = [
+  { href: '/', label: 'Gate' },
+  { href: '/archivio', label: 'Archivio' },
+  { href: '/processo', label: 'Processo' },
+  { href: '/visione', label: 'Visione' },
+  { href: '/storie', label: 'Storie' },
+  { href: '/timeline', label: 'Timeline' },
+  { href: '/elementi', label: 'Elementi' },
+  { href: '/unisciti', label: 'Unisciti' },
+];
+const isActive = (href: string) =>
+  href === '/' ? path === '/' : path === href || path.startsWith(href + '/');
+---
+<header class="site-header">
+  <div class="inner wrap wrap--wide">
+    <a class="logo" href="/">{site.nomeProgetto}</a>
+    <nav aria-label="Navigazione principale">
+      <button class="menu-toggle" aria-expanded="false" aria-controls="mainnav">Menu</button>
+      <ul id="mainnav">
+        {nav.map((n) => (
+          <li><a href={n.href} aria-current={isActive(n.href) ? 'page' : undefined}>{n.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header { position: sticky; top: 0; z-index: 50; background: var(--ivory-cream); border-bottom: 1px solid var(--camel); }
+  .inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-block: 0.7rem; }
+  .logo { font-family: var(--font-display); font-size: 1.15rem; font-weight: 600; letter-spacing: 0.04em; text-decoration: none; color: var(--bordeaux); }
+  nav ul { list-style: none; display: flex; flex-wrap: wrap; gap: 0.25rem 1.1rem; margin: 0; padding: 0; }
+  nav a { font-size: 0.92rem; text-decoration: none; color: var(--chocolate); padding: 0.2rem 0; }
+  nav a[aria-current="page"] { color: var(--rust-red); border-bottom: 2px solid var(--solar-yellow); }
+  nav a:hover { color: var(--rust-red); }
+  .menu-toggle { display: none; font-family: var(--font-body); background: none; border: 1px solid var(--camel); color: var(--chocolate); padding: 0.35rem 0.7rem; border-radius: 2px; cursor: pointer; }
+  @media (max-width: 760px) {
+    .menu-toggle { display: inline-block; }
+    nav ul { display: none; width: 100%; flex-direction: column; gap: 0; margin-top: 0.6rem; }
+    nav ul.open { display: flex; }
+    nav a { padding: 0.6rem 0; border-bottom: 1px solid var(--camel); }
+    .inner { flex-wrap: wrap; }
+  }
+</style>
+
+<script>
+  const btn = document.querySelector('.menu-toggle');
+  const list = document.getElementById('mainnav');
+  btn?.addEventListener('click', () => {
+    const open = list?.classList.toggle('open');
+    btn.setAttribute('aria-expanded', String(!!open));
+  });
+</script>

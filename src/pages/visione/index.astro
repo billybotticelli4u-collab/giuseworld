@@ -1,0 +1,64 @@
+---
+import Base from '../../layouts/Base.astro';
+import site from '../../data/site.json';
+import { getRiflessioni, byDateDesc, formatDate } from '../../lib/content';
+
+const all = byDateDesc(await getRiflessioni());
+const recenti = all.slice(0, 3);
+const ultima = all[0];
+const giorni = ultima ? (Date.now() - +new Date(ultima.data.data)) / 86400000 : Infinity;
+const stantia = giorni > 30;
+---
+<Base title="Visione" description="Come evolve il senso del progetto.">
+  <div class="wrap page">
+    <p class="eyebrow">Visione</p>
+    <h1>Come evolve il senso del progetto?</h1>
+
+    {/* Pannello 1 — Introduzione */}
+    <p class="intro">Qui raccolgo i principi che hanno portato alla nascita del progetto
+      e le riflessioni che ne accompagnano l'evoluzione nel tempo.</p>
+
+    {/* Pannello 2 — Riflessioni recenti */}
+    <section class="panel">
+      <h2>Riflessioni recenti</h2>
+      {recenti.length === 0 ? (
+        <p class="meta">La prima riflessione è in arrivo.</p>
+      ) : (
+        <>
+          <div class="cards">
+            {recenti.map((r) => (
+              <article class="card">
+                <h3>{r.data.titolo}</h3>
+                <p class="meta">{formatDate(new Date(r.data.data))}</p>
+                {r.data.estratto && <p>{r.data.estratto}</p>}
+                <a class="read" href={`/visione/riflessioni/${r.id}`}>Leggi →</a>
+              </article>
+            ))}
+          </div>
+          {stantia && (
+            <p class="fallback">L'archivio delle riflessioni è sempre consultabile qui sotto.
+              Prossima riflessione in arrivo.</p>
+          )}
+        </>
+      )}
+    </section>
+
+    {/* Pannello 3 — Fondamenta */}
+    <section class="panel fondamenta">
+      <h2>Fondamenta</h2>
+      <p>{site.fondamentaManifesto}</p>
+    </section>
+
+    {/* Pannello 4 — Archivio */}
+    <section class="panel">
+      <a class="cta" href="/visione/archivio">Vedi tutte le Riflessioni</a>
+    </section>
+  </div>
+</Base>
+<style>
+  .intro { font-family: var(--font-display); font-size: 1.3rem; line-height: 1.5; }
+  .panel { margin-top: 2.5rem; }
+  .fondamenta { background: var(--sunlit-khaki); border: 1px solid var(--camel); padding: 1.5rem; }
+  .fondamenta p { margin-bottom: 0; }
+  .fallback { margin-top: 1rem; font-size: 0.9rem; color: var(--chocolate); border-left: 3px solid var(--solar-yellow); padding-left: 0.9rem; }
+</style>

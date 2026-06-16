@@ -1,0 +1,45 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import PrevNext from '../../components/PrevNext.astro';
+import { getSessioni, prevNext, formatDate, tracceCollegate, urlFor } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const sessioni = await getSessioni();
+  return sessioni.map((s) => ({ params: { slug: s.id }, props: { id: s.id } }));
+}
+const { id } = Astro.props as { id: string };
+const sessioni = await getSessioni();
+const entry = sessioni.find((s) => s.id === id)!;
+const { Content } = await render(entry);
+const { prev, next } = prevNext(sessioni, id);
+const tracce = await tracceCollegate('sessioniCollegate', id); // inverse
+---
+<Base title={entry.data.titolo} description={entry.data.contestoBreve ?? ''}>
+  <article class="wrap page">
+    <Breadcrumb crumbs={[{ href: '/', label: 'Gate' }, { href: '/processo', label: 'Processo' }, { label: entry.data.titolo }]} />
+    <p class="eyebrow accent-processo">Sessione</p>
+    <h1>{entry.data.titolo}</h1>
+    <p class="meta">{formatDate(new Date(entry.data.data))}</p>
+
+    {entry.data.contestoBreve && <p>{entry.data.contestoBreve}</p>}
+    {entry.data.embed && <div class="embed" set:html={entry.data.embed} />}
+    <div class="prose"><Content /></div>
+
+    {tracce.length > 0 && (
+      <><h2>Tracce nate da questa sessione</h2>
+        <ul class="rel">{tracce.map((t) => <li><a href={urlFor('tracce', t.id)}>{t.data.titolo}</a></li>)}</ul>
+      </>
+    )}
+
+    <PrevNext prev={prev} next={next} base="/processo" />
+  </article>
+</Base>
+<style>
+  .rel { list-style: none; padding: 0; margin: 0.5rem 0; }
+  .rel li { padding: 0.5rem 0; border-bottom: 1px solid var(--camel); }
+  .rel a { text-decoration: none; font-weight: 500; color: var(--rust-red); }
+  .embed { margin: 1.5rem 0; aspect-ratio: 16/9; }
+  .embed :global(iframe) { width: 100%; height: 100%; border: 0; }
+</style>

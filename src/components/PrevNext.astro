@@ -1,0 +1,23 @@
+---
+interface Item { id: string; data: { titolo: string } }
+interface Props { prev: Item | null; next: Item | null; base: string; }
+const { prev, next, base } = Astro.props as Props;
+---
+{(prev || next) && (
+  <nav class="prevnext" aria-label="Navigazione tra contenuti">
+    {prev
+      ? <a class="pn pn--prev" href={`${base}/${prev.id}`}><span>← Precedente</span><strong>{prev.data.titolo}</strong></a>
+      : <span></span>}
+    {next
+      ? <a class="pn pn--next" href={`${base}/${next.id}`}><span>Successiva →</span><strong>{next.data.titolo}</strong></a>
+      : <span></span>}
+  </nav>
+)}
+<style>
+  .prevnext { display: flex; justify-content: space-between; gap: 1rem; margin-top: 3rem; border-top: 1px solid var(--camel); padding-top: 1.5rem; }
+  .pn { display: flex; flex-direction: column; text-decoration: none; max-width: 48%; }
+  .pn span { font-size: 0.78rem; color: var(--rust-red); }
+  .pn strong { font-family: var(--font-display); font-weight: 500; color: var(--bordeaux); }
+  .pn--next { text-align: right; margin-left: auto; }
+  .pn:hover strong { color: var(--rust-red); }
+</style>

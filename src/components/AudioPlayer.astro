@@ -1,0 +1,96 @@
+---
+// Minimal self-hosted audio player. No download, no share, no external logos.
+// Emits listen events (play, pause, 25/50/75/100, ended) to window.plausible if present.
+interface Props { src: string; title: string; }
+const { src, title } = Astro.props as Props;
+const id = 'p' + Math.random().toString(36).slice(2, 9);
+---
+<figure class="player" data-player data-title={title}>
+  <audio preload="metadata" src={src} id={id}></audio>
+  <div class="row">
+    <button class="pp" type="button" aria-label="Riproduci" data-pp>
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" data-icon-play><path d="M8 5v14l11-7z" fill="currentColor"/></svg>
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" data-icon-pause style="display:none"><path d="M6 5h4v14H6zM14 5h4v14h-4z" fill="currentColor"/></svg>
+    </button>
+    <div class="track">
+      <div class="bar" data-bar role="slider" tabindex="0" aria-label="Posizione" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <div class="fill" data-fill></div>
+      </div>
+      <div class="times"><span data-cur>0:00</span><span data-rem>-0:00</span></div>
+    </div>
+    <label class="vol" aria-label="Volume">
+      <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M5 9v6h4l5 5V4L9 9H5z" fill="currentColor"/></svg>
+      <input type="range" min="0" max="1" step="0.05" value="1" data-vol />
+    </label>
+  </div>
+</figure>
+
+<style>
+  .player { margin: 1.5rem 0; padding: 0.9rem 1rem; background: var(--chocolate); color: var(--ivory-cream); border-radius: 3px; }
+  .row { display: flex; align-items: center; gap: 0.9rem; }
+  .pp { flex: none; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--camel); background: var(--ivory-cream); color: var(--chocolate); display: grid; place-items: center; cursor: pointer; }
+  .pp:hover { background: var(--solar-yellow); }
+  .track { flex: 1; min-width: 0; }
+  .bar { height: 6px; background: rgba(242,230,216,0.25); border-radius: 99px; cursor: pointer; position: relative; }
+  .fill { height: 100%; width: 0; background: var(--solar-yellow); border-radius: 99px; }
+  .times { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--sunlit-khaki); margin-top: 0.4rem; font-variant-numeric: tabular-nums; }
+  .vol { display: flex; align-items: center; gap: 0.35rem; color: var(--sunlit-khaki); }
+  .vol input { width: 70px; accent-color: var(--solar-yellow); }
+  @media (max-width: 520px) { .vol { display: none; } }
+</style>
+
+<script>
+  function fmt(s: number) {
+    if (!isFinite(s)) s = 0;
+    const m = Math.floor(s / 60); const sec = Math.floor(s % 60);
+    return `${m}:${sec.toString().padStart(2, '0')}`;
+  }
+  document.querySelectorAll<HTMLElement>('[data-player]').forEach((root) => {
+    const audio = root.querySelector('audio') as HTMLAudioElement;
+    const pp = root.querySelector('[data-pp]') as HTMLButtonElement;
+    const iPlay = root.querySelector('[data-icon-play]') as SVGElement;
+    const iPause = root.querySelector('[data-icon-pause]') as SVGElement;
+    const bar = root.querySelector('[data-bar]') as HTMLElement;
+    const fill = root.querySelector('[data-fill]') as HTMLElement;
+    const cur = root.querySelector('[data-cur]') as HTMLElement;
+    const rem = root.querySelector('[data-rem]') as HTMLElement;
+    const vol = root.querySelector('[data-vol]') as HTMLInputElement;
+    const title = root.dataset.title || 'traccia';
+    const sent: Record<string, boolean> = {};
+    const ev = (name: string) => {
+      const w = window as any;
+      if (typeof w.plausible === 'function') w.plausible(name, { props: { traccia: title } });
+    };
+
+    pp.addEventListener('click', () => { audio.paused ? audio.play() : audio.pause(); });
+    audio.addEventListener('play', () => { iPlay.style.display = 'none'; iPause.style.display = ''; pp.setAttribute('aria-label', 'Pausa'); ev('play'); });
+    audio.addEventListener('pause', () => { iPlay.style.display = ''; iPause.style.display = 'none'; pp.setAttribute('aria-label', 'Riproduci'); ev('pause'); });
+    audio.addEventListener('ended', () => ev('ended'));
+
+    audio.addEventListener('timeupdate', () => {
+      const d = audio.duration || 0;
+      const pct = d ? (audio.currentTime / d) * 100 : 0;
+      fill.style.width = pct + '%';
+      bar.setAttribute('aria-valuenow', String(Math.round(pct)));
+      cur.textContent = fmt(audio.currentTime);
+      rem.textContent = '-' + fmt(d - audio.currentTime);
+      [25, 50, 75, 100].forEach((q) => {
+        if (pct >= q && !sent[q]) { sent[q] = true; ev(`listen_${q}`); }
+      });
+    });
+    audio.addEventListener('loadedmetadata', () => { rem.textContent = '-' + fmt(audio.duration); });
+
+    const seek = (clientX: number) => {
+      const r = bar.getBoundingClientRect();
+      const ratio = Math.min(1, Math.max(0, (clientX - r.left) / r.width));
+      if (audio.duration) audio.currentTime = ratio * audio.duration;
+    };
+    bar.addEventListener('click', (e) => seek((e as MouseEvent).clientX));
+    bar.addEventListener('keydown', (e) => {
+      const k = (e as KeyboardEvent).key;
+      if (k === 'ArrowRight') audio.currentTime = Math.min(audio.duration, audio.currentTime + 5);
+      if (k === 'ArrowLeft') audio.currentTime = Math.max(0, audio.currentTime - 5);
+    });
+    vol.addEventListener('input', () => { audio.volume = parseFloat(vol.value); });
+  });
+</script>

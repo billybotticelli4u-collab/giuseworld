@@ -1,0 +1,92 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import AudioPlayer from '../../components/AudioPlayer.astro';
+import PrevNext from '../../components/PrevNext.astro';
+import {
+  getTracce, getSessioni, getStorie, getRiflessioni, getElementi,
+  prevNext, formatDate, urlFor,
+} from '../../lib/content';
+
+export async function getStaticPaths() {
+  const tracce = await getTracce();
+  return tracce.map((t) => ({ params: { slug: t.id }, props: { id: t.id } }));
+}
+
+const { id } = Astro.props as { id: string };
+const tracce = await getTracce();
+const entry = tracce.find((t) => t.id === id)!;
+const { Content } = await render(entry);
+const { prev, next } = prevNext(tracce, id);
+
+// Resolve relations (relations live only on Traccia).
+const [sessioni, storie, riflessioni, elementi] = await Promise.all([
+  getSessioni(), getStorie(), getRiflessioni(), getElementi(),
+]);
+const pick = (coll: any[], refs: any[] | undefined) =>
+  (refs ?? []).map((r) => coll.find((e) => e.id === r.id)).filter(Boolean);
+
+const relSessioni = pick(sessioni, entry.data.sessioniCollegate);
+const relStorie = pick(storie, entry.data.storieCollegate);
+const relRiflessioni = pick(riflessioni, entry.data.riflessioniCollegate);
+const relElementi = pick(elementi, entry.data.elementiCollegati);
+const hasProcesso = !!entry.data.processo || relSessioni.length > 0;
+---
+<Base title={entry.data.titolo} description={entry.data.contesto ?? ''}>
+  <article class="wrap page">
+    <Breadcrumb crumbs={[{ href: '/', label: 'Gate' }, { href: '/archivio', label: 'Archivio' }, { label: entry.data.titolo }]} />
+    <p class="eyebrow">Traccia</p>
+    <h1>{entry.data.titolo}</h1>
+    <p class="meta">{formatDate(new Date(entry.data.data))}</p>
+
+    {entry.data.audio
+      ? <AudioPlayer src={entry.data.audio} title={entry.data.titolo} />
+      : entry.data.embed
+        ? <div class="embed" set:html={entry.data.embed} />
+        : null}
+
+    <div class="prose"><Content /></div>
+
+    {entry.data.contesto && (<><h2>Come è nata</h2><p>{entry.data.contesto}</p></>)}
+    {entry.data.note && (<><h2>Note al testo</h2><p>{entry.data.note}</p></>)}
+
+    {hasProcesso && (
+      <>
+        <h2>Processo creativo collegato</h2>
+        {entry.data.processo && <p>{entry.data.processo}</p>}
+        {relSessioni.length > 0 && (
+          <ul class="rel">
+            {relSessioni.map((s) => <li><a href={urlFor('sessioni', s.id)}>{s.data.titolo}</a></li>)}
+          </ul>
+        )}
+      </>
+    )}
+
+    {relStorie.length > 0 && (
+      <><h2>Storie collegate</h2>
+        <ul class="rel">{relStorie.map((s) => <li><a href={urlFor('storie', s.id)}>{s.data.titolo}</a></li>)}</ul>
+      </>
+    )}
+    {relRiflessioni.length > 0 && (
+      <><h2>Riflessioni collegate</h2>
+        <ul class="rel">{relRiflessioni.map((s) => <li><a href={urlFor('riflessioni', s.id)}>{s.data.titolo}</a></li>)}</ul>
+      </>
+    )}
+    {relElementi.length > 0 && (
+      <><h2>Elementi collegati</h2>
+        <ul class="rel">{relElementi.map((s) => <li><a href={urlFor('elementi', s.id)}>{s.data.titolo}</a></li>)}</ul>
+      </>
+    )}
+
+    <PrevNext prev={prev} next={next} base="/archivio" />
+  </article>
+</Base>
+
+<style>
+  .prose :global(p) { margin-bottom: 1.1em; }
+  .rel { list-style: none; padding: 0; margin: 0.5rem 0; }
+  .rel li { padding: 0.5rem 0; border-bottom: 1px solid var(--camel); }
+  .rel a { text-decoration: none; font-weight: 500; color: var(--rust-red); }
+  .embed { margin: 1.5rem 0; }
+</style>
