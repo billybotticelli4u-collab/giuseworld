@@ -26,9 +26,9 @@ const id = 'p' + Math.random().toString(36).slice(2, 9);
 </figure>
 
 <style>
-  .player { margin: 1.5rem 0; padding: 0.9rem 1rem; background: var(--chocolate); color: var(--ivory-cream); border-radius: 3px; }
+  .player { margin: 1.5rem 0; padding: 0.9rem 1rem; background: var(--ink-3); color: var(--ivory-cream); border: 1px solid var(--line); border-radius: 4px; }
   .row { display: flex; align-items: center; gap: 0.9rem; }
-  .pp { flex: none; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--camel); background: var(--ivory-cream); color: var(--chocolate); display: grid; place-items: center; cursor: pointer; }
+  .pp { flex: none; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--solar-yellow); background: var(--solar-yellow); color: var(--ink); display: grid; place-items: center; cursor: pointer; transition: filter .2s ease; }
   .pp:hover { background: var(--solar-yellow); }
   .track { flex: 1; min-width: 0; }
   .bar { height: 6px; background: rgba(242,230,216,0.25); border-radius: 99px; cursor: pointer; position: relative; }
