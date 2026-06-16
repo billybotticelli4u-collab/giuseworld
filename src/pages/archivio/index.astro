@@ -1,12 +1,12 @@
 ---
 import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
 import { getTracce, byDateDesc, formatDate } from '../../lib/content';
 const tracce = byDateDesc(await getTracce());
 ---
 <Base title="Archivio Musicale" description="I capitoli del progetto.">
+  <PageHero eyebrow="Archivio Musicale" title="Cosa hai creato?" img="/media/heroes/archivio.jpg" />
   <div class="wrap page">
-    <p class="eyebrow">Archivio Musicale</p>
-    <h1>Cosa hai creato?</h1>
     <p>I capitoli del progetto, dal più recente. Ogni traccia è una pagina a sé.</p>
     {tracce.length === 0 ? (
       <p class="meta">Nessuna traccia pubblicata.</p>

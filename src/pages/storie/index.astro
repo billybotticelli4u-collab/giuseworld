@@ -1,12 +1,12 @@
 ---
 import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
 import { getStorie, byDateDesc, formatDate } from '../../lib/content';
 const storie = byDateDesc(await getStorie());
 ---
 <Base title="Storie" description="Le persone che mi hanno formato.">
+  <PageHero eyebrow="Storie" title="Cosa ti ha formato?" img="/media/heroes/storie.jpg" accent="accent-storie" />
   <div class="wrap page">
-    <p class="eyebrow accent-storie">Storie</p>
-    <h1>Cosa ti ha formato?</h1>
     <p>Le persone e gli incontri che hanno cambiato il percorso.</p>
     {storie.length === 0 ? (
       <p class="meta">Nessuna storia pubblicata.</p>

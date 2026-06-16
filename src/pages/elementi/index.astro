@@ -1,12 +1,12 @@
 ---
 import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
 import { getElementi, byDateDesc } from '../../lib/content';
 const elementi = byDateDesc(await getElementi());
 ---
 <Base title="Elementi" description="Come la visione prende forma.">
+  <PageHero eyebrow="Elementi" title="Come prende forma la visione?" img="/media/heroes/elementi.jpg" />
   <div class="wrap wrap--wide page">
-    <p class="eyebrow">Elementi</p>
-    <h1>Come prende forma la visione?</h1>
     <p>Simboli, immagini e pattern che danno corpo al progetto.</p>
     {elementi.length === 0 ? (
       <p class="meta">Nessun elemento pubblicato.</p>

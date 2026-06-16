@@ -1,14 +1,14 @@
 ---
 import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
 import site from '../../data/site.json';
 const posti = site.mecenatePostiDisponibili;
 const totali = site.mecenatePostiTotali;
 const email = site.emailProgetto;
 ---
 <Base title="Unisciti al Viaggio" description="Newsletter, contatti e supporto.">
+  <PageHero eyebrow="Unisciti al Viaggio" title="Come entro e partecipo?" img="/media/heroes/unisciti.jpg" />
   <div class="wrap page">
-    <p class="eyebrow">Unisciti al Viaggio</p>
-    <h1>Come entro e partecipo?</h1>
     <p class="intro">{site.nomeProgetto} è in continua evoluzione. Se sei arrivato fin qui, sei già
       parte del viaggio. Qui puoi rimanere aggiornato, entrare in contatto diretto con me e, se lo
       desideri, contribuire alla crescita del progetto.</p>

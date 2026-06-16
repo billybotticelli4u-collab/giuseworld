@@ -9,6 +9,7 @@ const gate = tracce.find((t) => t.id === site.gateTraccia) ?? tracce[0];
 ---
 <Base title={site.nomeProgetto} description={site.gateBenvenuto} gate={true}>
   <section class="gate">
+    <div class="gate-bg" aria-hidden="true"><img class="kenburns" src="/media/gate.jpg" alt="" /><div class="gate-bgveil"></div></div>
     <div class="seed" aria-hidden="true">
       <svg viewBox="0 0 100 160" width="120" height="190">
         <line class="stem" x1="50" y1="155" x2="50" y2="70" />
@@ -43,6 +44,12 @@ const gate = tracce.find((t) => t.id === site.gateTraccia) ?? tracce[0];
     color: var(--ivory-cream);
     padding: 2rem var(--pad); position: relative; overflow: hidden;
   }
+  .gate-bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+  .gate-bg img { width: 100%; height: 100%; object-fit: cover; opacity: 0.5; }
+  .gate .kenburns { animation: gkb 28s ease-in-out infinite alternate; transform-origin: 50% 42%; }
+  @keyframes gkb { from { transform: scale(1.04); } to { transform: scale(1.15); } }
+  .gate-bgveil { position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(13,9,8,0.35) 20%, rgba(13,9,8,0.86) 78%, var(--ink) 100%); }
+  @media (prefers-reduced-motion: reduce) { .gate .kenburns { animation: none; } }
   .gate-inner { max-width: 36rem; text-align: center; position: relative; z-index: 2; }
   .welcome { font-family: var(--font-display); font-size: clamp(1.25rem, 3.5vw, 1.7rem); line-height: 1.5; color: var(--ivory-cream); }
   .gate-title { font-family: var(--font-display); letter-spacing: 0.1em; text-transform: uppercase; font-size: 0.95rem; color: var(--sunlit-khaki); margin-bottom: 0.2rem; }

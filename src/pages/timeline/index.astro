@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
 import { buildTimeline, formatDate } from '../../lib/content';
 const items = await buildTimeline();
 // Group by year for readability.
@@ -12,9 +13,8 @@ for (const it of items) {
 const years = [...byYear.keys()].sort((a, b) => b - a);
 ---
 <Base title="Timeline" description="La cronologia di tutto il percorso.">
+  <PageHero eyebrow="Timeline" title="Quando è successo?" img="/media/heroes/timeline.jpg" />
   <div class="wrap page">
-    <p class="eyebrow">Timeline</p>
-    <h1>Quando è successo?</h1>
     <p>Tutto il percorso in ordine cronologico inverso. Generata automaticamente dai contenuti.</p>
 
     {items.length === 0 ? (

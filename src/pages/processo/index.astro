@@ -1,12 +1,12 @@
 ---
 import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
 import { getSessioni, byDateDesc, formatDate } from '../../lib/content';
 const sessioni = byDateDesc(await getSessioni());
 ---
 <Base title="Processo Creativo" description="Come nasce la musica.">
+  <PageHero eyebrow="Processo Creativo" title="Come nasce?" img="/media/heroes/processo.jpg" accent="accent-processo" />
   <div class="wrap page">
-    <p class="eyebrow accent-processo">Processo Creativo</p>
-    <h1>Come nasce?</h1>
     <p>Le sessioni di lavoro documentate, dalla più recente.</p>
     {sessioni.length === 0 ? (
       <p class="meta">Nessuna sessione pubblicata.</p>

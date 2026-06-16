@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
 import site from '../../data/site.json';
 import { getRiflessioni, byDateDesc, formatDate } from '../../lib/content';
 
@@ -10,9 +11,8 @@ const giorni = ultima ? (Date.now() - +new Date(ultima.data.data)) / 86400000 : 
 const stantia = giorni > 30;
 ---
 <Base title="Visione" description="Come evolve il senso del progetto.">
+  <PageHero eyebrow="Visione" title="Come evolve il senso del progetto?" img="/media/heroes/visione.jpg" />
   <div class="wrap page">
-    <p class="eyebrow">Visione</p>
-    <h1>Come evolve il senso del progetto?</h1>
 
     {/* Pannello 1 — Introduzione */}
     <p class="intro">Qui raccolgo i principi che hanno portato alla nascita del progetto
